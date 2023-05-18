@@ -12,24 +12,26 @@ const home = async (req, res, next) => {
         }
         return res.status(200).json({ message: 'welcome' });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Server error' });
     }
 }
 
 const register = async (req, res, next) => {
     try {
-        const result = await authSchema.validateAsync(req.body);
-        const user = await User.findByEmail(result.email);
+        const request = await authSchema.validateAsync(req.body);
+        const user = await User.findByEmail(request.email);
         if (user) {
             res.status(409).json({ message: 'User with the same email already exists' });
+        }
+        else if (request.password !== request.password_confirm) {
+            res.status(409).json({ message: 'Passwords do not match!' });
         } else {
-            const newUser = new User(result.name, result.email, await User.bcryptPass(result.password));
+            const newUser = new User(request.name, request.email, await User.bcryptPass(request.password));
             await newUser.save();
             const accessToken = await signAccessToken(newUser.id)
-            console.log(accessToken)
             res.status(201).json({ message: 'User created successfully', token: accessToken });
         }
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -37,10 +39,10 @@ const register = async (req, res, next) => {
 }
 const login = async (req, res, next) => {
     try {
-        const result = await authSchema.validateAsync(req.body);
-        const user = await User.findByEmail(result.email);
+        const request = await authSchema.validateAsync(req.body);
+        const user = await User.findByEmail(request.email);
         if (user) {
-            const isMatch = await User.isValidPass(result.password, user.password)
+            const isMatch = await User.isValidPass(request.password, user.password)
             if (!isMatch) {
                 res.status(401).json({ message: 'Invalid password' });
             } else {
@@ -56,7 +58,6 @@ const login = async (req, res, next) => {
             res.status(409).json({ message: 'Use not registered' });
         }
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
@@ -64,29 +65,30 @@ const logout = async (req, res, next) => {
     try {
         const user = req.user.aud;
         if (blacklist.includes(user)) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).json({ error: 'Unauthorized' });
+        } else {
+            blacklist.push(user);
+            res.status(200).json({ message: 'Logged out successfully' });
         }
-        blacklist.push(user);
-        res.status(200).json({ message: 'Logged out successfully' });
+
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
 
 const addCoordinates = async (req, res, next) => {
     try {
-        const result = await placeSchema.validateAsync(req.body);
+        const request = await placeSchema.validateAsync(req.body);
         const user = req.user.aud;
         if (blacklist.includes(user)) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).json({ error: 'Unauthorized' });
+        } else {
+            const newFavorite = new Favorite(request.lat, request.lng, request.formatted_address);
+            await newFavorite.save(user);
+            res.status(201).json({ message: 'Place added successfully in Favorite List' });
         }
-        // res.status(200).json(user);
-        const newFavorite = new Favorite(result.lat, result.lng, result.formatted_address);
-        await newFavorite.save(user);
-        res.status(201).json({ message: 'Place added successfully in Favorite List'});
+
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
@@ -95,12 +97,13 @@ const allFavorites = async (req, res, next) => {
     try {
         const user = req.user.aud;
         if (blacklist.includes(user)) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).json({ error: 'Unauthorized' });
+        } else {
+            const favorites = await Favorite.getAllFavorites(user);
+            res.status(201).json(favorites);
         }
-        const favorites = await Favorite.getAllFavorites(user);
-        res.status(201).json(favorites);
+
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
