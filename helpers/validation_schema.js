@@ -7,6 +7,11 @@ const authSchema = Joi.object({
   password_confirm: Joi.string().min(2).required(),
 })
 
+const authSchemaL = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().min(2).required(),
+})
+
 const placeSchema = Joi.object({
   lat: Joi.required(),
   lng: Joi.required(),
@@ -20,6 +25,7 @@ const coordinateSchema = Joi.object({
 
 module.exports = {
   authSchema,
+  authSchemaL,
   placeSchema,
   coordinateSchema
 }
