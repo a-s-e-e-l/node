@@ -6,7 +6,6 @@ class Coordinate {
         this.id = uuidv4();
         this.lat = lat;
         this.lng = lng;
-        this.place_id = place_id;
         this.created_at = new Date();
     }
     async save(userId) {
@@ -17,7 +16,6 @@ class Coordinate {
             id: this.id,
             lat: this.lat,
             lng: this.lng,
-            place_id: this.place_id,
             created_at: this.created_at,
         });
     }

@@ -13,14 +13,12 @@ const authSchemaL = Joi.object({
 })
 
 const placeSchema = Joi.object({
-  lat: Joi.required(),
-  lng: Joi.required(),
+  place_id: Joi.required(),
 })
 
 const coordinateSchema = Joi.object({
   lat: Joi.required(),
   lng: Joi.required(),
-  place_id: Joi.required(),
 })
 
 module.exports = {

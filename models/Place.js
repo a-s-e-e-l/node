@@ -2,10 +2,9 @@ const firebase = require('../configrations/db')
 const { v4: uuidv4 } = require('uuid');
 const firestore = firebase.firestore();
 class Place {
-    constructor(lat, lng) {
+    constructor(place_id) {
         this.id = uuidv4();
-        this.lat = lat;
-        this.lng = lng;
+        this.place_id = place_id;
         this.created_at = new Date();
     }
     async save(userId) {
@@ -14,8 +13,7 @@ class Place {
         // Save the Favorite instance to Firestore
         await favoriteRef.set({
             id: this.id,
-            lat: this.lat,
-            lng: this.lng,
+            place_id: this.place_id,
             created_at: this.created_at,
         });
     }

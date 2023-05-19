@@ -10,7 +10,7 @@ const addCoordinate = async (req, res, next) => {
         if (blacklist.includes(user)) {
             return res.status(401).json({ error: 'Unauthorized' });
         } else {
-            const newFavorite = new coordinateModel(request.lat, request.lng, request.place_id);
+            const newFavorite = new coordinateModel(request.lat, request.lng);
             await newFavorite.save(user);
             res.status(201).json({ message: 'Added successfully in Favorite Coordinate List' });
         }
@@ -26,7 +26,7 @@ const addPlace = async (req, res, next) => {
         if (blacklist.includes(user)) {
             return res.status(401).json({ error: 'Unauthorized' });
         } else {
-            const newFavorite = new placeModel(request.lat, request.lng);
+            const newFavorite = new placeModel(request.place_id);
             await newFavorite.save(user);
             res.status(201).json({ message: 'Added successfully in Favorite Place List' });
         }
