@@ -8,9 +8,10 @@ const home = async (req, res, next) => {
     try {
         const user = req.user.aud;
         if (blacklist.includes(user)) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).json({ error: 'Unauthorized' });
+        }else{
+            res.status(200).json({ message: 'welcome' });
         }
-        return res.status(200).json({ message: 'welcome' });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
