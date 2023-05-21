@@ -2,10 +2,11 @@ const firebase = require('../configrations/db')
 const { v4: uuidv4 } = require('uuid');
 const firestore = firebase.firestore();
 class Coordinate {
-    constructor(lat, lng, place_id) {
+    constructor(lat, lng, address) {
         this.id = uuidv4();
         this.lat = lat;
         this.lng = lng;
+        this.address = address;
         this.created_at = new Date();
     }
     async save(userId) {
@@ -16,6 +17,7 @@ class Coordinate {
             id: this.id,
             lat: this.lat,
             lng: this.lng,
+            address: this.address,
             created_at: this.created_at,
         });
     }
