@@ -4,6 +4,7 @@ const { signAccessToken } = require('../helpers/jwt_helper')
 const JWT = require('jsonwebtoken')
 
 let blacklist = [];
+
 const home = async (req, res, next) => {
     try {
         const user = req.user.aud;
@@ -38,9 +39,9 @@ const register = async (req, res, next) => {
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 const login = async (req, res, next) => {
     try {
-    
         const request = await authSchemaL.validateAsync(req.body);
         const user = await User.findByEmail(request.email);
         if (user) {
@@ -63,6 +64,7 @@ const login = async (req, res, next) => {
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 const logout = async (req, res, next) => {
     try {
         const user = req.user.aud;
